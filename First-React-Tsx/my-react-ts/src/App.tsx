@@ -5,7 +5,7 @@ import type {
   FormEvent
 } from "react";
 
-import {UserCard} from "./UserCard";
+import { UserCard } from "./UserCard";
 import type { User } from "./types";
 import "./App.css";
 
@@ -25,9 +25,10 @@ function App() {
 
   const [error, setError] = useState<string | null>(null);
 
+  const [update, setUpdate] = useState<User | null>(null);
 
+  const [updateLoading, setUpdateLoading] = useState<boolean>(true)
   // 2. FETCH USERS FROM API
-
   useEffect(() => {
 
     const fetchUsers = async () => {
@@ -67,31 +68,23 @@ function App() {
     fetchUsers();
 
   }, []);
-
-
   // 3. INPUT CHANGE HANDLERS
-
   const handleNameChange = (
     event: ChangeEvent<HTMLInputElement>
   ) => {
     setName(event.target.value);
   };
-
   const handleEmailChange = (
     event: ChangeEvent<HTMLInputElement>
   ) => {
     setEmail(event.target.value);
   };
-
   const handleSearchChange = (
     event: ChangeEvent<HTMLInputElement>
   ) => {
     setSearch(event.target.value);
   };
-
-
   // 4. ADD NEW USER
-
   const handleSubmit = (
     event: FormEvent<HTMLFormElement>
   ) => {
@@ -113,27 +106,43 @@ function App() {
     setEmail("");
 
   };
-
-
   // 5. DELETE USER
-
-  const handleDelete = (id: number) => {
+  const Delete = (id: number) => {
 
     setUsers((currentUsers) =>
       currentUsers.filter((user) => user.id !== id)
     );
 
   };
-
-
   // 6. SEARCH USERS
-
   const filteredUsers = users.filter((user) =>
     user.name.toLowerCase().includes(
       search.toLowerCase()
     )
   );
-
+  //   8 update Users 
+  const updateUsers = (id: number) => {
+    const selectedUser = users.find((e) => e.id === id)
+    console.log(selectedUser, "Slected user")
+    if (selectedUser) {
+      setUpdate(selectedUser)
+      setName(selectedUser.name)
+      setEmail(selectedUser.email)
+      setUpdateLoading(false)
+    }
+  }
+  // Save Button >
+  const handleSave = () => {
+    if(!update){
+      console.log("No user stored in your ")
+      return;
+    }
+    setUsers((prevuser) => prevuser.map((user) => user.id === update.id ? { ...user,name:name,email:email } : user))
+    console.log("save Clicked....", "Your New name and Email:  ", name, email)
+    setName("")
+    setEmail("")
+    setUpdateLoading(true)
+  }
 
   // 7. DISPLAY APPLICATION
 
@@ -193,7 +202,13 @@ function App() {
 
       {error && <p className="error">{error}</p>}
 
-
+      {!updateLoading && (
+        <div className="update">
+          <p>Update Now!</p>
+          <button onClick={handleSave}>Save</button>
+          <button>Cancel</button>
+        </div>
+      )}
       {/* USER LIST */}
 
       {!loading && !error && (
@@ -207,7 +222,8 @@ function App() {
               <UserCard
                 key={user.id}
                 user={user}
-                onDelete={handleDelete}
+                Delete={Delete}
+                Update={updateUsers}
               />
 
             ))

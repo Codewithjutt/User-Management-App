@@ -1,22 +1,28 @@
-import type { user } from './types'
+import type { User } from "./types";
 
-
-
-interface userCardProps {
-    user: user,
-    onDelete: (id: number) => void
+interface UserCardProps {
+  user: User;
+  Delete: (id: number) => void;
+  Update: (id: number) => void;
 }
 
-export function UserCard({ user, onDelete }: userCardProps) {
-    console.log(user,"user in UserCard")
-    return (
+export function UserCard({
+  user,
+  Delete,
+  Update
+}: UserCardProps) {
+  return (
+    <div className="user-card">
+      <h3>{user.name}</h3>
+      <p>{user.email}</p>
 
-        <div className="user-card">
-             <h2>{user.name}</h2> 
-             <p>{user.email}</p>
-             <button onClick={() => onDelete(user.id)}>Delete User!</button>
-        </div>
+      <button onClick={() => Update(user.id)}>
+        Edit User
+      </button>
 
-
-    )
+      <button onClick={() => Delete(user.id)}>
+        Delete
+      </button>
+    </div>
+  );
 }
